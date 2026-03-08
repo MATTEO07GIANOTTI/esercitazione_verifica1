@@ -1,0 +1,50 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: registro
+      MYSQL_USER: registro
+      MYSQL_PASSWORD: registro123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    command: start-dev --import-realm
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+
+  backend:
+    build: ./backend
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_USER: registro
+      MYSQL_PASSWORD: registro123
+      MYSQL_DB: registro
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: registro-realm
+      KEYCLOAK_CLIENT_ID: registro-frontend
+    depends_on:
+      - mysql
+      - keycloak
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+
+volumes:
+  mysql_data:
