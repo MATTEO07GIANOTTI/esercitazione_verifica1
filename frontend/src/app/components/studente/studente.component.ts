@@ -11,10 +11,24 @@ import { Grade } from '../../models/grade.model';
 })
 export class StudenteComponent implements OnInit {
   grades: Grade[] = [];
+  error: string = '';
+  loading: boolean = true;
 
   constructor(private gradesService: GradesService) {}
 
   ngOnInit() {
-    this.gradesService.getGrades().subscribe((res) => (this.grades = res));
+    console.log('StudenteComponent: Loading grades...');
+    this.gradesService.getGrades().subscribe(
+      (res) => {
+        console.log('StudenteComponent: Grades loaded:', res);
+        this.grades = res;
+        this.loading = false;
+      },
+      (err) => {
+        console.error('StudenteComponent: Error loading grades:', err);
+        this.error = `Error: ${err.status} - ${err.statusText}`;
+        this.loading = false;
+      }
+    );
   }
 }

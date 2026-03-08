@@ -9,10 +9,16 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     const token = this.authService.token;
-    if (!token) return next.handle(req);
+    console.log('AuthInterceptor: token available?', !!token);
+    console.log('AuthInterceptor: token value:', token ? token.substring(0, 50) + '...' : 'NO TOKEN');
+    
+    if (!token) {
+      console.warn('AuthInterceptor: No token available, sending request without auth');
+      return next.handle(req);
+    }
 
-    return next.handle(
-      req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    );
+    const modifiedReq = req.clone({ setHeaders: { Authorization: `Bearer ${token}` } });
+    console.log('AuthInterceptor: Added Bearer token to request');
+    return next.handle(modifiedReq);
   }
 }

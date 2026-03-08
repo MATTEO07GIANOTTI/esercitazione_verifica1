@@ -1,7 +1,15 @@
 <h2>Area Studente</h2>
 <p>Qui vedi soltanto i tuoi voti.</p>
 
-<table>
+<div *ngIf="error" style="color: red; background: #ffebee; padding: 10px; margin: 10px 0;">
+  <strong>Errore:</strong> {{ error }}
+</div>
+
+<div *ngIf="loading">
+  <p>Caricamento voti...</p>
+</div>
+
+<table *ngIf="!loading">
   <thead>
     <tr>
       <th>Materia</th>
@@ -14,6 +22,9 @@
       <td>{{ g.subject }}</td>
       <td>{{ g.grade }}</td>
       <td>{{ g.created_at }}</td>
+    </tr>
+    <tr *ngIf="grades.length === 0">
+      <td colspan="3">Nessun voto disponibile</td>
     </tr>
   </tbody>
 </table>

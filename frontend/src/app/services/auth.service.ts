@@ -11,10 +11,15 @@ export class AuthService {
   });
 
   async init() {
+    console.log('AuthService: Initializing Keycloak...');
     await this.keycloak.init({ onLoad: 'login-required', checkLoginIframe: false });
+    console.log('AuthService: Keycloak initialized');
+    console.log('AuthService: Initial token:', this.keycloak.token ? this.keycloak.token.substring(0, 50) + '...' : 'NO TOKEN');
   }
 
   get token(): string | undefined {
+    console.log('AuthService.token getter called');
+    console.log('AuthService: keycloak.token available?', !!this.keycloak.token);
     return this.keycloak.token;
   }
 

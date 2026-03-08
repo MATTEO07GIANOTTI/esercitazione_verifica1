@@ -15,7 +15,10 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": ["http://localhost:4200/*"],
+      "redirectUris": [
+        "http://localhost:4200/*",
+        "https://urban-memory-x56w9vq5qj57hv694-4200.app.github.dev/*"
+      ],
       "webOrigins": ["*"]
     }
   ]

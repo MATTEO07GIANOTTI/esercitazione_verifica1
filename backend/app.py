@@ -1,5 +1,6 @@
 import os
 import requests
+import time
 from functools import wraps
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -50,13 +51,17 @@ def require_auth(required_role=None):
         @wraps(fn)
         def wrapper(*args, **kwargs):
             auth_header = request.headers.get("Authorization", "")
+            print(f"DEBUG: Auth header: {auth_header[:50] if auth_header else 'MISSING'}")
             if not auth_header.startswith("Bearer "):
+                print(f"DEBUG: No Bearer token found. Headers: {dict(request.headers)}")
                 return jsonify({"error": "Missing bearer token"}), 401
 
             token = auth_header.replace("Bearer ", "")
             try:
                 payload = _decode_token(token)
+                print(f"DEBUG: Token payload: {payload}")
             except Exception as ex:
+                print(f"DEBUG: Token decode error: {str(ex)}")
                 return jsonify({"error": f"Token invalid: {str(ex)}"}), 401
 
             if required_role:
@@ -109,5 +114,21 @@ def add_grade():
 
 
 if __name__ == "__main__":
-    db.init_schema()
+    # Retry mechanism to wait for MySQL to be ready
+    max_retries = 30
+    retry_count = 0
+    while retry_count < max_retries:
+        try:
+            db.init_schema()
+            print("✓ Database schema initialized successfully")
+            break
+        except Exception as e:
+            retry_count += 1
+            if retry_count >= max_retries:
+                print(f"✗ Failed to initialize database after {max_retries} attempts")
+                raise
+            wait_time = min(2 ** retry_count, 10)  # Exponential backoff, max 10 seconds
+            print(f"⏳ Waiting for MySQL... (attempt {retry_count}/{max_retries}, next retry in {wait_time}s)")
+            time.sleep(wait_time)
+    
     app.run(host="0.0.0.0", port=5000, debug=True)
