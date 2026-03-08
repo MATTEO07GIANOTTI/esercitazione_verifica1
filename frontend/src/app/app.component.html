@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="nav">
+    <div><strong>Registro Elettronico</strong> ({{ auth.username }})</div>
+    <button (click)="auth.logout()">Logout</button>
+  </div>
+
+  <nav>
+    <a routerLink="/">Home</a> |
+    <a routerLink="/docente">Area Docente</a> |
+    <a routerLink="/studente">Area Studente</a>
+  </nav>
+
+  <router-outlet></router-outlet>
+</div>

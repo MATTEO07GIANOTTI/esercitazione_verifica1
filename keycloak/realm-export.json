@@ -1,0 +1,22 @@
+{
+  "realm": "registro-realm",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "docente" },
+      { "name": "studente" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "registro-frontend",
+      "name": "registro-frontend",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["*"]
+    }
+  ]
+}

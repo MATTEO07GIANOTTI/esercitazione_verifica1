@@ -1,0 +1,31 @@
+<h2>Area Docente</h2>
+<p>Inserisci un voto e visualizza i voti di tutti gli studenti.</p>
+
+<div>
+  <input [(ngModel)]="form.student_username" placeholder="Username studente" />
+  <input [(ngModel)]="form.student_name" placeholder="Nome studente" />
+  <input [(ngModel)]="form.subject" placeholder="Materia" />
+  <input [(ngModel)]="form.grade" type="number" placeholder="Voto" />
+  <button (click)="submit()">Salva voto</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Studente</th>
+      <th>Materia</th>
+      <th>Voto</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let g of grades">
+      <td>{{ g.student_username }}</td>
+      <td>{{ g.student_name }}</td>
+      <td>{{ g.subject }}</td>
+      <td>{{ g.grade }}</td>
+      <td>{{ g.created_at }}</td>
+    </tr>
+  </tbody>
+</table>

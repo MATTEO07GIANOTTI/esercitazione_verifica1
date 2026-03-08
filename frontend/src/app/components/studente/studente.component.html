@@ -1,0 +1,19 @@
+<h2>Area Studente</h2>
+<p>Qui vedi soltanto i tuoi voti.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Materia</th>
+      <th>Voto</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let g of grades">
+      <td>{{ g.subject }}</td>
+      <td>{{ g.grade }}</td>
+      <td>{{ g.created_at }}</td>
+    </tr>
+  </tbody>
+</table>
