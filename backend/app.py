@@ -13,6 +13,7 @@ CORS(app)
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://keycloak:8080")
 REALM = os.getenv("KEYCLOAK_REALM", "registro-realm")
 AUDIENCE = os.getenv("KEYCLOAK_CLIENT_ID", "registro-frontend")
+EXPECTED_ISSUER = os.getenv("KEYCLOAK_ISSUER")
 
 
 db = Database()
@@ -38,8 +39,27 @@ def _decode_token(token: str):
     if not rsa_key:
         raise ValueError("Invalid token key")
 
-    issuer = f"{KEYCLOAK_URL}/realms/{REALM}"
-    return jwt.decode(token, rsa_key, algorithms=["RS256"], audience=AUDIENCE, issuer=issuer)
+    payload = jwt.decode(
+        token,
+        rsa_key,
+        algorithms=["RS256"],
+        options={"verify_aud": False},
+    )
+
+    token_issuer = payload.get("iss", "")
+    expected_issuer = EXPECTED_ISSUER or f"{KEYCLOAK_URL}/realms/{REALM}"
+    if token_issuer not in {expected_issuer, expected_issuer.replace("http://", "https://")}:
+        raise ValueError(f"Invalid issuer: {token_issuer}")
+
+    audiences = payload.get("aud", [])
+    if isinstance(audiences, str):
+        audiences = [audiences]
+
+    authorized_party = payload.get("azp")
+    if AUDIENCE not in audiences and authorized_party != AUDIENCE:
+        raise ValueError("Token not meant for configured client")
+
+    return payload
 
 
 def get_realm_roles(payload: dict):
